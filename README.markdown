@@ -1,16 +1,17 @@
 BackgroundCache
 ===============
 
-Use a rake task to expire any number of fragments or actions (with or without layout). Uses Rails and cache_fu.
+Use a rake task to expire any number of fragments or actions, with or without layout. Uses Rails and cache_fu.
 
 Dynamic Configuration
 ---------------------
 
-Create <code>lib/background\_cache\_config.rb</code>:
+Create *lib/background\_cache\_config.rb*:
 
 <pre>
 BackgroundCache::Config.new do |config|
-  # Conigure a background cache in one method call
+
+  # Conigure a background cache in one call
   Tag::League.find(:all).each do |tag|
     config.cache(
       # Route params
@@ -23,7 +24,8 @@ BackgroundCache::Config.new do |config|
       :layout => false
     )
   end
-  # Or group configure using block methods
+  
+  # Group configure using block methods
   config.every(1.hour).fragment("sections_teams_#{tag.permalink}").layout(false) do
     Tag::League.find(:all).each do |tag|
       config.cache(
@@ -33,13 +35,14 @@ BackgroundCache::Config.new do |config|
       )
     end
   end
+  
   # Or use a mix of the two
 end
 </pre>
 
-If a fragment is not specified, all of the action's caches will regenerate.
+If no fragment is specified, all of the action's caches will regenerate.
 
-This configuration reloads every time the rake task runs (new records get background cached).
+This configuration reloads every time the rake task runs. New records get background cached.
 
 Rake task
 ---------
@@ -50,12 +53,12 @@ What does the rake task do?
 
 * Adds a security key to memcache that is shared by the app and rake task
 * Sends a request to the app to reload its BackgroundCache config
-* If it is time for a cache to expire, the task sends an expire request to the action
-* BackgroundCache detects the request within the app and modifies the render/expires as configured
+* If time for a cache to expire, the task sends an expire request to the action
+* BackgroundCache detects the request within the app and modifies the layout or expiry as configured
 
-Memcached is employed to track the expire time of each background cache. As a side benefit, if memcached restarts, the rake task will know to generate all caches.
+Memcached is employed to track the expire time of each background cache. As a side benefit, if memcached restarts, the rake task knows to generate all caches.
 
-TODO
+Todo
 ----
 
 * Specs
