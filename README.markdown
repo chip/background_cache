@@ -11,7 +11,7 @@ Create *lib/background\_cache\_config.rb*:
 <pre>
 BackgroundCache::Config.new do |config|
 
-  # Conigure a background cache in one call
+  # Configure a background cache in one call
   Tag::League.find(:all).each do |tag|
     config.cache(
       # Route params
