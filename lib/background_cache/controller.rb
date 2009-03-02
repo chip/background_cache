@@ -6,8 +6,13 @@ module BackgroundCache
   private
     class BackgroundCacheFilter
       def before(controller)
-        # Triggered by adding ?background_cache to a path
-        if controller.params.keys.include?("background_cache")
+        # Secure filters
+        key = CACHE['background_cache/key']
+        # Reload the background cache config (stay dynamic)
+        if controller.params[:background_cache_config] == key
+          load RAILS_ROOT + "/lib/background_cache_config.rb"
+        # Reload the cache for an entire page, action, or fragment
+        elsif controller.params[:background_cache] == key
           controller.params.delete("background_cache")
           # Retrieve caches from config
           caches = BackgroundCache::Config.caches
