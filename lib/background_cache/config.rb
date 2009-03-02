@@ -19,6 +19,25 @@ module BackgroundCache
     end
     def every(seconds, &block)
       @every = seconds
+      yield
+    end
+    # Unique cache id for storing last expired time
+    def self.cache_id(cache)
+      id = []
+      join = lambda do |k, v|
+        if k && v
+          [ k, v ].collect { |kv| kv.to_s.gsub(/\W/, '_') }.join('-')
+        else nil
+        end
+      end
+      cache[:url_for].each do |key, value|
+        id << join.call(key, value)
+      end
+      cache.each do |key, value|
+        next if key == :url_for
+        id << join.call(key, value)
+      end
+      'background_cache/' + id.compact.join('/')
     end
     def self.caches
       @@caches

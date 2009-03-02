@@ -8,14 +8,13 @@ module BackgroundCache
       def before(controller)
         # Triggered by adding ?background_cache to a path
         if controller.params.keys.include?("background_cache")
-          # Remove background_cache from params
           controller.params.delete("background_cache")
-          # Retrieve caches
+          # Retrieve caches from config
           caches = BackgroundCache::Config.caches
-          # Find matching cache
+          # Find cache that matches params
           @cache = caches.select { |item| item[:url_for] == controller.params }[0]
           if @cache
-            # Store and disable current layout
+            # Store current layout, then disable it
             if @cache[:layout] == false
               @layout = controller.active_layout
               controller.class.layout(false)
