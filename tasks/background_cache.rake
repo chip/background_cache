@@ -5,8 +5,8 @@ task :background_cache => :environment do
   # Used to make requests
   session = ActionController::Integration::Session.new
   session.host = nil
-  # Reload the application background cache config (stay dynamic)
-  session.get("/?background_cache_config=#{key}")
+  # Load the application background cache config (stay dynamic)
+  session.get("/?background_cache_load=#{key}")
   # Retrieve caches from config
   load RAILS_ROOT + "/lib/background_cache_config.rb"
   caches = BackgroundCache::Config.caches
@@ -15,14 +15,15 @@ task :background_cache => :environment do
     id = BackgroundCache::Config.unique_cache_id(cache)
     # Find out when this cache was last expired
     expired_at = CACHE[id]
-    expired_at = Marshal::load(expired_at) if expired_at
     # If last expired doesn't exist or is older than :every
     if !expired_at || Time.now - expired_at > cache[:every]
       # Request action with ?background_cache
-      session.get(session.url_for(cache[:url_for]) + "?background_cache=#{key}")
+      session.get(session.url_for(cache[:params]) + "?background_cache=#{key}")
       # Update last expired time
-      CACHE[id] = Marshal.dump(Time.now)
+      CACHE[id] = Time.now
     end
     puts id
   end
+  # Unload the application background cache config
+  session.get("/?background_cache_unload=#{key}")
 end
