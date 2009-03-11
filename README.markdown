@@ -1,7 +1,7 @@
 BackgroundCache
 ===============
 
-Use a rake task to expire any number of fragments or actions, with or without layout. Uses Rails and cache_fu.
+Use a rake task to expire fragments, with or without a layout. Uses Rails and cache_fu.
 
 Dynamic Configuration
 ---------------------
@@ -20,13 +20,13 @@ BackgroundCache::Config.new do |config|
       :tag => tag.permalink,
       # Background cache options
       :every => 1.hour,
-      :fragment => "sections_teams_#{tag.permalink}",
-      :layout => false
+      :layout => false,
+      :only => "sections_teams_#{tag.permalink}"
     )
   end
   
   # Group configure using block methods
-  config.every(1.hour).fragment("sections_teams_#{tag.permalink}").layout(false) do
+  config.every(1.hour).layout(false).only("sections_teams_#{tag.permalink}") do
     Tag::League.find(:all).each do |tag|
       config.cache(
         :controller => 'sections',
@@ -39,6 +39,8 @@ BackgroundCache::Config.new do |config|
   # Or use a mix of the two
 end
 </pre>
+
+The :only and :except options can be fragment ids or arrays of fragment ids.
 
 If no fragment is specified, all of the action's caches will regenerate.
 
