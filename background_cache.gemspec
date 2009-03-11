@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name    = 'background_cache'
-  s.version = '0.1'
-  s.date    = '2008-02-29'
+  s.version = '0.1.1'
+  s.date    = '2008-03-11'
   
   s.summary     = "Generate caches before your users do (with Rails and cache_fu)"
   s.description = "Generate caches before your users do (with Rails and cache_fu)"
@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
     lib/background_cache.rb
     lib/background_cache/config.rb
     lib/background_cache/controller.rb
+    lib/background_cache/helper.rb
     spec/spec.opts
     spec/spec_helper.rb
     tasks/background_cache.rake
